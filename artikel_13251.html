@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCP vs Function Calling vs OpenAPI: AI Tool Protocols Compared</title>
+    <link rel="canonical" href="https://railfansday.github.io/newera3/artikel_13251.html">
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f4f4f9; line-height: 1.6; }
+        .container { max-width: 800px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .btn-back { display: inline-block; margin-bottom: 20px; color: #0d6efd; text-decoration: none; }
+        .article-body img { max-width: 100%; height: auto; border-radius: 8px; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="btn-back">&larr; Kembali ke Daftar Berita</a>
+        <h1>MCP vs Function Calling vs OpenAPI: AI Tool Protocols Compared</h1>
+        <p style="color: #888; font-size: 14px;">Tanggal: 2026-11-03</p>
+        
+        <div class="article-body">
+            <img src="https://media2.dev.to/dynamic/image/width=1200,height=627,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.us-east-2.amazonaws.com%2Fuploads%2Farticles%2Fozcnj5w5ga3dvgnouv3z.png" alt="MCP vs Function Calling vs OpenAPI: AI Tool Protocols Compared" style="max-width:100%; height:auto; border-radius:8px;">
+            
+            <div style="text-align:center; margin-bottom:20px;"><img src="https://media2.dev.to/dynamic/image/width=1200,height=627,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.us-east-2.amazonaws.com%2Fuploads%2Farticles%2Fozcnj5w5ga3dvgnouv3z.png" alt="MCP vs Function Calling vs OpenAPI: AI Tool Protocols Compared" style="max-width:100%; height:auto; border-radius:8px;" loading="lazy"></div>
+            <div class="article-body" style="font-size: 16px; line-height: 1.8; color: #333;">
+                <p>Posted on Nov 3
+•
+Originally published at pikvue.com</p>
+<p>The biggest challenge in AI development isn't the models — it's connecting them to the real world. How do you let an AI agent read your database, send emails, or control your app? In 2026, three protocols dominate AI tool integration: Anthropic's Model Context Protocol (MCP), OpenAI's Function Calling, and the classic OpenAPI specification adapted for AI.</p>
+<p>The same 10-tool integration is the fairest way to compare these approaches — it exercises developer experience, flexibility, model compatibility, and production reliability in one pass.</p>
+<p>MCP is the most forward-looking protocol — it's open, model-agnostic, and designed for a world where AI agents interact with dozens of tools dynamically. Function Calling is the easiest to implement for simple use cases with OpenAI models. OpenAPI is the pragmatic choice when you already have REST APIs and want to expose them to AI without rewriting anything.</p>
+<p>MCP is an open protocol developed by Anthropic that standardizes how AI models connect to external tools, data sources, and services. Think of it as "USB-C for AI" — one standard interface that any AI model can use to interact with any tool. MCP servers expose tools, resources, and prompts through a standardized JSON-RPC interface.</p>
+<p>The key innovation is that MCP separates tool definition from model implementation. An MCP server can be used by Claude, GPT, Gemini, or any compatible model without modification. This creates a reusable ecosystem of tool servers that work across the entire AI landscape.</p>
+<p>Function Calling is OpenAI's approach to tool integration. You define functions as JSON schemas in your API request, and the model returns structured function calls when it determines a tool should be used. The developer handles the actual function execution and returns results to the model for the next step.</p>
+<p>Function Calling has become a de facto standard — Anthropic, Google, Mistral, and most other providers now support OpenAI-compatible function calling formats. It's simple, well-documented, and works reliably for straightforward tool integration.</p>
+<p>OpenAPI (formerly Swagger) is the standard for describing REST APIs. In 2026, several tools (LangChain, LlamaIndex, custom frameworks) can automatically convert OpenAPI specifications into AI-compatible tool definitions. This means any existing REST API can be exposed to AI models without writing new code.</p>
+<p>The approach is pragmatic: you already have APIs, you already have OpenAPI specs, and AI frameworks can consume them directly. It's not purpose-built for AI, but it works surprisingly well.</p>
+<p>MCP: Setting up an MCP server requires understanding the JSON-RPC protocol and implementing the MCP SDK (available in TypeScript, Python, and Rust). The initial learning curve is steeper, but the result is a reusable tool server that works with any compatible AI. The MCP Inspector tool makes debugging straightforward.</p>
+<p>Function Calling: The simplest approach. Define a JSON schema, include it in your API request, and handle the function call response. You can go from zero to working tool integration in 15 minutes. The downside is that tool definitions are tightly coupled to your API request — there's no separation between tool provider and tool consumer.</p>
+<p>OpenAPI: If you already have OpenAPI specs, the setup is near-zero. Tools like LangChain's OpenAPI toolkit automatically parse your spec and create AI-compatible tool definitions. The quality of the generated tool descriptions depends on how well your OpenAPI spec is documented.</p>
+<p>Reliability: Function Calling is the most battle-tested at scale — OpenAI processes billions of function calls daily. OpenAPI-based integrations inherit the reliability of the underlying REST APIs. MCP is newer but has been adopted by major players (Anthropic, Cursor, Replit) and is maturing rapidly.</p>
+<p>Security: MCP's server-managed authentication is the most secure — each MCP server controls its own credentials and permissions. Function Calling requires the developer to manage credentials in the calling application. OpenAPI inherits standard HTTP security practices (OAuth, API keys, etc.).</p>
+<p>Monitoring: All three approaches can be monitored, but MCP's structured protocol makes it easier to build tool-specific observability. Function Calling monitoring is tied to your API logging. OpenAPI monitoring uses standard API observability tools.</p>
+<p>MCP: The ecosystem is growing rapidly. Anthropic's Claude Desktop, Cursor IDE, and Replit all support MCP natively. Community MCP servers exist for databases, file systems, Git, Kubernetes, and dozens of other services. The protocol is open and vendor-neutral, encouraging broad adoption.</p>
+<p>Function Calling: The largest installed base. Every major AI provider supports some form of function calling. Libraries and frameworks (LangChain, Vercel AI SDK, Semantic Kernel) provide high-level abstractions. The ecosystem is mature but fragmented across provider-specific extensions.</p>
+<p>OpenAPI: The largest existing API ecosystem. Millions of APIs have OpenAPI specifications. Tools like Swagger UI, Postman, and Redoc provide documentation and testing. The AI-specific tooling (automatic conversion to AI tools) is still evolving but works well for standard REST patterns.</p>
+<p>MCP is the future of AI tool integration. If you're building tools for the long term, investing in MCP is the right move. The protocol is open, model-agnostic, and designed for the multi-model, multi-tool world we're heading toward.</p>
+<p>Function Calling is the fastest path to production for simple tool integrations with OpenAI-compatible models. Start here if you need to ship today. OpenAPI is the pragmatic bridge between existing APIs and AI — use it when you want to expose your REST APIs to AI without any rewrites.</p>
+<p>For most teams, we recommend: start with Function Calling for quick wins, invest in MCP for reusable tool infrastructure, and use OpenAPI to bridge existing APIs. These approaches are complementary, not mutually exclusive.</p>
+<p>Originally published at pikvue.com — independent 2026 reviews and comparisons of developer tools, AI products, and SaaS platforms.</p>
+<p>Templates let you quickly answer FAQs or store snippets for re-use.</p>
+<p>Are you sure you want to hide this comment? It will become hidden in your post, but will still be visible via the comment's permalink.</p>
+<p>For further actions, you may consider blocking this person and/or reporting abuse</p>
+<p>DEV Community — A space to discuss and keep up software development and manage your software career</p>
+<p>Built on Forem — the open source software that powers DEV and other inclusive communities.</p>
+<p>Made with love and Ruby on Rails. DEV Community © 2016 - 2026.</p>
+<p>We're a place where coders share, stay up-to-date and grow their careers.</p>
+                <p style="margin-top: 25px;">
+                    <a href="https://dev.to/guang_diyuzhi_74b0fec2c09/mcp-vs-function-calling-vs-openapi-ai-tool-protocols-compared-4bg1" target="_blank" rel="nofollow noopener" style="color: #0d6efd; text-decoration: none; font-weight: bold;">
+                        &rarr; Baca artikel asli
+                    </a>
+                </p>
+            </div>
+            
+            
+<div style="text-align:center; margin:20px 0;">
+    <script type="text/javascript">
+        atOptions = {'key' : 'f9e40eb3b3cd05f1038aac7b36b33ad2','format' : 'iframe','height' : 90,'width' : 728,'params' : {}};
+    </script>
+    <script type="text/javascript" src="https://upholdbrilliancerecast.com/f9e40eb3b3cd05f1038aac7b36b33ad2/invoke.js"></script>
+</div>
+
+        </div>
+    </div>
+</body>
+</html>
+        

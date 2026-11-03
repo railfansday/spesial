@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Data Has 100 Attributes - How Many Indexes Do You Need To Search Within Millisecond?</title>
+    <link rel="canonical" href="https://railfansday.github.io/newera3/artikel_13298.html">
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f4f4f9; line-height: 1.6; }
+        .container { max-width: 800px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .btn-back { display: inline-block; margin-bottom: 20px; color: #0d6efd; text-decoration: none; }
+        .article-body img { max-width: 100%; height: auto; border-radius: 8px; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="btn-back">&larr; Kembali ke Daftar Berita</a>
+        <h1>Your Data Has 100 Attributes - How Many Indexes Do You Need To Search Within Millisecond?</h1>
+        <p style="color: #888; font-size: 14px;">Tanggal: 2026-11-03</p>
+        
+        <div class="article-body">
+            <img src="https://hackernoon.imgix.net/images/5OuphibiudS6xWM7RvWzpc2Z6Ju1-tz83d5e.png" alt="Your Data Has 100 Attributes - How Many Indexes Do You Need To Search Within Millisecond?" style="max-width:100%; height:auto; border-radius:8px;">
+            
+            <div style="text-align:center; margin-bottom:20px;"><img src="https://hackernoon.imgix.net/images/5OuphibiudS6xWM7RvWzpc2Z6Ju1-tz83d5e.png" alt="Your Data Has 100 Attributes - How Many Indexes Do You Need To Search Within Millisecond?" style="max-width:100%; height:auto; border-radius:8px;" loading="lazy"></div>
+            <div class="article-body" style="font-size: 16px; line-height: 1.8; color: #333;">
+                <p>Senior Software Engineer at Microsoft building AI agents, workflow orchestration, and enterprise automation at scale. Views are his own.</p>
+<p>Senior Software Engineer at Microsoft building AI agents, workflow orchestration, and enterprise automation at scale. Views are his own.</p>
+<p>Senior Software Engineer at Microsoft building AI agents, workflow orchestration, and enterprise automation at scale. Views are his own.</p>
+<p>Real records rarely have five fields. Products, trips, and configurations can carry hundreds of attributes, and every user or service filters by a different handful. A key-value lookup is fast when you already know the key. But what is the key when it's whatever combination of attributes someone picked a moment ago?</p>
+<p>I first ran into this problem at a global travel company, and again at a global e-commerce company. Different domains, identical shape:</p>
+<p>That last point matters. When data is read far more often than written, you can afford to organize it once and reuse that work on every query.</p>
+<p>A key-value store answers get(key) in roughly constant time. To search by city, you add a lookup keyed by city. To search by city and stars, you add a lookup keyed by both. If every combination should be a direct lookup, n attributes produce 2^n - 1 of them:</p>
+<p>Even if queries never combine more than three of 100 attributes, that is 166,750 lookups, each storing references to the records again and each rebuilt whenever data changes. And each must exist before anyone asks.</p>
+<p>Ordered composite indexes soften this, but they work best when a query matches their leading columns. An index on (city, stars, price) does not naturally serve a query on price alone.</p>
+<p>You already know the standard answer: build one index per attribute and intersect the results. That is n indexes instead of 2^n.</p>
+<p>The catch is that intersection cost follows the size of each matched list, not the size of the answer. Imagine a million hotels, city = Paris matching 40% of them and stars >= 4 matching 60%. To return a handful of results, you still materialize and compare hundreds of thousands of record IDs.</p>
+<p>I wanted per-attribute indexes that could be combined without building large ID sets: any combination, chosen at query time, answered in memory.</p>
+<p>That search became KiaraDB, first in Java and later in TypeScript.</p>
+<p>KiaraDB stores records as paths in a tree, so records that share values share nodes: near the top of the tree, all Paris hotels sit under one Paris node, not a list of a million IDs. Every node also carries a pair of numbers that tells you, with two quick comparisons, whether one node sits underneath another. That is all you need to combine conditions.</p>
+<p>You never declare which combinations you'll ask. You declare the fields.</p>
+<p>Fields become tree levels in declaration order. Put attributes with few distinct values first and unique IDs last, so early levels share more nodes:</p>
+<p>Load the records, prepare once, then ask two unrelated combinations:</p>
+<p>Neither combination appears anywhere in the setup. Tomorrow's query on price and cancellation needs no new code either.</p>
+<p>The same model runs in Node.js or the browser:</p>
+<p>NATIVE keeps decimals such as 4.5 intact. Both libraries also support multi-value fields, dates, stored ranges, typo-tolerant keyword search, and prefix completion.</p>
+<p>I described the core algorithm in a 2020 paper, Efficient Storage and Retrieval of In-Memory Static Data. Think of a book's table of contents: chapter 3 spans pages 40-60, so a section on page 45 must belong to chapter 3. KiaraDB numbers its tree the same way.</p>
+<p>Here is "Paris hotels with free cancellation," on a tree simplified to two levels:</p>
+<p>The city index returns one node, [1, 6]. The cancellation index returns two, [2, 3] and [8, 9]. Only [2, 3] fits inside [1, 6], so h1 and h2 are returned, and Rome's path is never read. No index for "city + cancellation" exists, and none is needed.</p>
+<p>Per the paper, preparation is linear in records times attributes, and a query's cost tracks how many nodes its conditions match, not how many combinations are possible. Numeric bands and stored ranges use the same idea, with binary search over sorted keys and interval trees.</p>
+<p>I can answer that within one library. An earlier TypeScript engine kept one index per attribute, but merged results as record-ID sets, rechecked the candidates, and scanned numeric and range entries linearly. The current engine, released as kiara-ts 1.2.0, uses the tree and its numbers. Both ran on the same synthetic 100,000-record, four-attribute dataset under Node 24, with five isolated runs per engine:</p>
+<p>Stored range containing a value, 1 result</p>
+<p>Broad filter, first 100 of 100,000 matches</p>
+<p>Selective queries dropped well below a millisecond. Broad queries improved less, because the matching records still have to be assembled. Preparing the data took 0.87 seconds instead of 1.31, with about 14% less memory before text-search caches.</p>
+<p>This compares two versions of one library on synthetic data, not every possible index implementation or your production workload. The full benchmark report includes the method and raw results.</p>
+<p>It fits read-mostly data that fits in memory, with many attributes and unpredictable combinations: catalogs, inventories, reference data, and layered configuration, queried inside your application process.</p>
+<p>It is not durable storage or a transactional database. Updates work by preparing a replacement snapshot and switching to it, which suits data that refreshes every few minutes or hours, not thousands of writes per second. Everything lives in RAM, so measure memory with your own records.</p>
+<p>Start with the query your current indexes make awkward: the one combining attributes nobody planned for.</p>
+<p>Before You Blame the Model, Check What Your Compactor Deleted</p>
+<p>Senior Software Engineer at Microsoft building AI agents, workflow orchestration, and enterprise automation at scale. Views are his own.</p>
+                <p style="margin-top: 25px;">
+                    <a href="https://hackernoon.com/your-data-has-100-attributes-how-many-indexes-do-you-need-to-search-within-millisecond?source=rss" target="_blank" rel="nofollow noopener" style="color: #0d6efd; text-decoration: none; font-weight: bold;">
+                        &rarr; Baca artikel asli
+                    </a>
+                </p>
+            </div>
+            
+            
+<div style="text-align:center; margin:20px 0;">
+    <script type="text/javascript">
+        atOptions = {'key' : 'f9e40eb3b3cd05f1038aac7b36b33ad2','format' : 'iframe','height' : 90,'width' : 728,'params' : {}};
+    </script>
+    <script type="text/javascript" src="https://upholdbrilliancerecast.com/f9e40eb3b3cd05f1038aac7b36b33ad2/invoke.js"></script>
+</div>
+
+        </div>
+    </div>
+</body>
+</html>
+        

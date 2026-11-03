@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Tour of the LightCMS Editor: WYSIWYG That Outputs Clean Markdown</title>
+    <link rel="canonical" href="https://railfansday.github.io/newera3/artikel_13242.html">
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f4f4f9; line-height: 1.6; }
+        .container { max-width: 800px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .btn-back { display: inline-block; margin-bottom: 20px; color: #0d6efd; text-decoration: none; }
+        .article-body img { max-width: 100%; height: auto; border-radius: 8px; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="btn-back">&larr; Kembali ke Daftar Berita</a>
+        <h1>A Tour of the LightCMS Editor: WYSIWYG That Outputs Clean Markdown</h1>
+        <p style="color: #888; font-size: 14px;">Tanggal: 2026-11-03</p>
+        
+        <div class="article-body">
+            <img src="https://media2.dev.to/dynamic/image/width=1200,height=627,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.us-east-2.amazonaws.com%2Fuploads%2Farticles%2F12cr6tknimh2lsodu5qt.png" alt="A Tour of the LightCMS Editor: WYSIWYG That Outputs Clean Markdown" style="max-width:100%; height:auto; border-radius:8px;">
+            
+            <div style="text-align:center; margin-bottom:20px;"><img src="https://media2.dev.to/dynamic/image/width=1200,height=627,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.us-east-2.amazonaws.com%2Fuploads%2Farticles%2F12cr6tknimh2lsodu5qt.png" alt="A Tour of the LightCMS Editor: WYSIWYG That Outputs Clean Markdown" style="max-width:100%; height:auto; border-radius:8px;" loading="lazy"></div>
+            <div class="article-body" style="font-size: 16px; line-height: 1.8; color: #333;">
+                <p>Posted on Nov 3
+•
+Originally published at blogs.lightcms.me</p>
+<p>Most "Markdown editors" are a text area with a preview pane stapled to the side. You write raw syntax, glance at the result, and hope the nesting is right. The lightCMS editor works the other way. You write, and the editor writes Markdown underneath.</p>
+<p>This is a tour of that writing surface: what it does, why it works that way, and what it deliberately refuses to do.</p>
+<p>The editor is built on TipTap, a ProseMirror-based rich text framework, configured to serialize everything it produces into standard Markdown plus YAML front matter.</p>
+<p>You get the immediacy of a word processor with the durability of plain text. There is no proprietary document format, no binary blob, and no conversion step when you leave.</p>
+<p>Headings, block quotes, ordered and unordered lists, horizontal rules, and task lists: the full skeleton of a technical article, all keyboard-reachable.</p>
+<p>Insert a fenced block, pick the language, and the editor keeps the fence and language tag intact. Your published post renders with the same syntax highlighting your SSG already applies.</p>
+<p>Write inline math or display equations and see them typeset live. For technical publishing such as ML posts, physics notes, and algorithm write-ups, this removes the "compile to check the formula" loop.</p>
+<p>Insert rows and columns visually. Markdown tables are miserable to author by hand; here they are just cells.</p>
+<p>Drag images onto the page. LightCMS stores the file, generates the reference, and writes it into your content, so a screenshot goes from clipboard to published without a trip through your file system.</p>
+<p>The other half of any static-site post is its front matter, and it is where hand-editing usually goes wrong: a stray tab, a date in the wrong format, an unclosed quote, and the build breaks.</p>
+<p>In LightCMS, front matter is a form: title, description, date, tags, keywords, and whatever else your schema declares. The editor validates as you type and writes correctly formatted YAML on publish. Writers never see the syntax, and the repository still receives what the SSG expects.</p>
+<p>A large share of "my build is failing" support threads in static-site communities trace back to malformed front matter, and a visual form removes that class of error.</p>
+<p>The editor ships with light and dark modes. That sounds cosmetic until you have written for three hours: a pure #ffffff background at 1am is hostile, and most admin dashboards do not care. LightCMS picks its palettes for reading and writing over long sessions, not for a screenshot on a landing page.</p>
+<p>You can, and developers often do. But as soon as a second person touches the repository, "just edit the Markdown" becomes a support burden: wrong front matter, mangled tables, accidental whitespace commits. Fixing a typo then means installing an editor, cloning a repo, and learning a branch workflow.</p>
+<p>The LightCMS editor leaves the developer's workflow untouched and removes those barriers for everyone else.</p>
+<p>No. It serializes to standard Markdown with YAML front matter, the same output a careful human would write. Open any published post in VS Code and it reads normally.</p>
+<p>Always. LightCMS commits to your repository like anyone else would. Hand edits, editor edits, and AI edits all land as the same .md files.</p>
+<p>Your SSG's shortcodes live in the content as plain text and are passed through untouched; the editor does not attempt to interpret or reformat them.</p>
+<p>Drag and drop. LightCMS places the asset and writes the reference so the path matches what your build expects.</p>
+<p>Next: the AI copilot that lives beside this editor, and dictating a draft with your voice when typing is the slow part.</p>
+<p>Templates let you quickly answer FAQs or store snippets for re-use.</p>
+<p>Are you sure you want to hide this comment? It will become hidden in your post, but will still be visible via the comment's permalink.</p>
+<p>For further actions, you may consider blocking this person and/or reporting abuse</p>
+<p>DEV Community — A space to discuss and keep up software development and manage your software career</p>
+<p>Built on Forem — the open source software that powers DEV and other inclusive communities.</p>
+<p>Made with love and Ruby on Rails. DEV Community © 2016 - 2026.</p>
+<p>We're a place where coders share, stay up-to-date and grow their careers.</p>
+                <p style="margin-top: 25px;">
+                    <a href="https://dev.to/lightcms5/a-tour-of-the-lightcms-editor-wysiwyg-that-outputs-clean-markdown-10nl" target="_blank" rel="nofollow noopener" style="color: #0d6efd; text-decoration: none; font-weight: bold;">
+                        &rarr; Baca artikel asli
+                    </a>
+                </p>
+            </div>
+            
+            
+<div style="text-align:center; margin:20px 0;">
+    <script type="text/javascript">
+        atOptions = {'key' : 'f9e40eb3b3cd05f1038aac7b36b33ad2','format' : 'iframe','height' : 90,'width' : 728,'params' : {}};
+    </script>
+    <script type="text/javascript" src="https://upholdbrilliancerecast.com/f9e40eb3b3cd05f1038aac7b36b33ad2/invoke.js"></script>
+</div>
+
+        </div>
+    </div>
+</body>
+</html>
+        

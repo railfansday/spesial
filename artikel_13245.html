@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How One Builder Scores B2B Leads 1-10 in Seconds With n8n + AI</title>
+    <link rel="canonical" href="https://railfansday.github.io/newera3/artikel_13245.html">
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f4f4f9; line-height: 1.6; }
+        .container { max-width: 800px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .btn-back { display: inline-block; margin-bottom: 20px; color: #0d6efd; text-decoration: none; }
+        .article-body img { max-width: 100%; height: auto; border-radius: 8px; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="btn-back">&larr; Kembali ke Daftar Berita</a>
+        <h1>How One Builder Scores B2B Leads 1-10 in Seconds With n8n + AI</h1>
+        <p style="color: #888; font-size: 14px;">Tanggal: 2026-11-03</p>
+        
+        <div class="article-body">
+            <img src="https://media2.dev.to/dynamic/image/width=1200,height=627,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.us-east-2.amazonaws.com%2Fuploads%2Farticles%2Fhtvqhzo27ehi3kmkbeb5.png" alt="How One Builder Scores B2B Leads 1-10 in Seconds With n8n + AI" style="max-width:100%; height:auto; border-radius:8px;">
+            
+            <div style="text-align:center; margin-bottom:20px;"><img src="https://media2.dev.to/dynamic/image/width=1200,height=627,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.us-east-2.amazonaws.com%2Fuploads%2Farticles%2Fhtvqhzo27ehi3kmkbeb5.png" alt="How One Builder Scores B2B Leads 1-10 in Seconds With n8n + AI" style="max-width:100%; height:auto; border-radius:8px;" loading="lazy"></div>
+            <div class="article-body" style="font-size: 16px; line-height: 1.8; color: #333;">
+                <p>Posted on Nov 3
+•
+Originally published at soloagentflow.com</p>
+<p>Most agencies don’t have a lead problem. They have a response-time problem. A builder in the r/n8n community recently shared how a client kept losing high-budget prospects simply because nobody got back to them fast enough, and how an automated AI lead qualification engine fixed it.</p>
+<p>By the end of this article, you’ll understand exactly how that workflow is structured, why it’s a sellable service for small agencies and B2B firms, and how to build a first version yourself with n8n and an LLM like Google Gemini 2.5 Flash.</p>
+<p>Low-code automation tools like n8n and fast, inexpensive LLMs have made it realistic for a solo builder to ship something that used to require a dev team. The pain point in this case is extremely common: inbound inquiries arrive, someone has to read them, and the good ones get buried under the bad ones.</p>
+<p>That’s the opportunity. Lots of service businesses still triage leads by hand, and they understand the cost of a lost deal intuitively. You don’t have to sell them on AI. You sell them on never missing a hot lead again.</p>
+<p>According to the original poster, their client runs an agency that receives dozens of project inquiries every month. The team had to manually read every submission, figure out who was serious, and write back.</p>
+<p>The author describes the core issues like this:</p>
+<p>In other words, the agency was paying twice: once in wasted staff hours, and again in lost revenue from slow responses. The builder’s stated goal was to “completely remove the human bottleneck.”</p>
+<p>The system the author built does three things:</p>
+<p>The tech stack is intentionally simple: n8n as the automation backbone and Google Gemini 2.5 Flash for the scoring logic.</p>
+<p>Here’s how the author structured the build, based on the shared write-up.</p>
+<p>A web form captures the key qualification fields: budget, timeline, and project details. Before the AI touches anything, an n8n Google Sheets node logs the raw submission with a “Pending” status.</p>
+<p>The author calls this a crucial safety net: if the AI API crashes, no lead data is ever lost. This is the detail that separates a demo from a system a client will actually trust. If you sell this as a service, lead with this point. Business owners care far more about “no lead ever disappears” than about which model you use.</p>
+<p>Next, the lead data is passed to Gemini 2.5 Flash, which evaluates the submission and returns a score from 1 to 10. The publicly available portion of the post doesn’t detail the exact prompt, so you’ll need to design your own scoring rubric with your client. A practical starting point is to have the model weigh the same fields the form collects: how concrete the budget is, how soon the timeline is, and how specific the project description is.</p>
+<p>A tip from experience: ask the model to return structured output (for example, a score plus a one-line reason). The reason field makes it much easier to debug bad scores and to show the client why a lead was ranked the way it was.</p>
+<p>The score drives what happens next. The author describes routing leads “intelligently” based on their score. How you split the tiers is up to you and your client, but a common pattern looks like this:</p>
+<p>Treat these tiers as suggestions, not the author’s exact setup. Tune the thresholds with real data after the first few weeks.</p>
+<p>This case is a client project, which points to the clearest way to monetize it: build lead qualification systems for businesses that receive inbound inquiries. The source doesn’t share what the builder charged, so you’ll need to price based on your market and the value you deliver.</p>
+<p>Marketing, design, and dev agencies are a natural fit because they get custom project requests with wildly varying budgets. You build the workflow, connect it to their form and CRM or sheet, and charge a setup fee.</p>
+<p>APIs change, prompts need tuning, and clients want tweaks. A small monthly retainer for monitoring, adjusting score thresholds, and reporting is a reasonable add-on. Hosting and API costs vary, so check the official n8n and Google sites for current pricing before quoting anything.</p>
+<p>Once you’ve built this for one niche, the structure transfers to others with inquiry-heavy pipelines, such as B2B consultancies, commercial contractors, or software firms. Rework the form fields and scoring rubric for each vertical and you have a repeatable offer.</p>
+<p>Be realistic with clients and with yourself:</p>
+<p>Here’s a checklist you can start on today to build your first version and turn it into an offer.</p>
+<p>Start small, prove it on one client’s real pipeline, and refine from there. The builder in this case started by solving one client’s frustrating problem, and that’s often the most reliable way to find a service people will pay for.</p>
+<p>Based on a write-up by the original builder on r/n8n: I got tired of my client losing hot B2B leads to slow response times...</p>
+<p>Templates let you quickly answer FAQs or store snippets for re-use.</p>
+<p>Are you sure you want to hide this comment? It will become hidden in your post, but will still be visible via the comment's permalink.</p>
+<p>For further actions, you may consider blocking this person and/or reporting abuse</p>
+<p>DEV Community — A space to discuss and keep up software development and manage your software career</p>
+<p>Built on Forem — the open source software that powers DEV and other inclusive communities.</p>
+<p>Made with love and Ruby on Rails. DEV Community © 2016 - 2026.</p>
+<p>We're a place where coders share, stay up-to-date and grow their careers.</p>
+                <p style="margin-top: 25px;">
+                    <a href="https://dev.to/fun_fun_19313eced54af3c68/how-one-builder-scores-b2b-leads-1-10-in-seconds-with-n8n-ai-3oaa" target="_blank" rel="nofollow noopener" style="color: #0d6efd; text-decoration: none; font-weight: bold;">
+                        &rarr; Baca artikel asli
+                    </a>
+                </p>
+            </div>
+            
+            
+<div style="text-align:center; margin:20px 0;">
+    <script type="text/javascript">
+        atOptions = {'key' : 'f9e40eb3b3cd05f1038aac7b36b33ad2','format' : 'iframe','height' : 90,'width' : 728,'params' : {}};
+    </script>
+    <script type="text/javascript" src="https://upholdbrilliancerecast.com/f9e40eb3b3cd05f1038aac7b36b33ad2/invoke.js"></script>
+</div>
+
+        </div>
+    </div>
+</body>
+</html>
+        

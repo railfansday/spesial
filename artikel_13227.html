@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your AI-built Next.js 16 landing page looks fine. Its link preview might not: 6 metadata traps and the prompts that fix them</title>
+    <link rel="canonical" href="https://railfansday.github.io/newera3/artikel_13227.html">
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f4f4f9; line-height: 1.6; }
+        .container { max-width: 800px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .btn-back { display: inline-block; margin-bottom: 20px; color: #0d6efd; text-decoration: none; }
+        .article-body img { max-width: 100%; height: auto; border-radius: 8px; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="btn-back">&larr; Kembali ke Daftar Berita</a>
+        <h1>Your AI-built Next.js 16 landing page looks fine. Its link preview might not: 6 metadata traps and the prompts that fix them</h1>
+        <p style="color: #888; font-size: 14px;">Tanggal: 2026-11-03</p>
+        
+        <div class="article-body">
+            <img src="https://media2.dev.to/dynamic/image/width=1200,height=627,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.us-east-2.amazonaws.com%2Fuploads%2Farticles%2Ff5rmz35vkgc1lkmywfnr.png" alt="Your AI-built Next.js 16 landing page looks fine. Its link preview might not: 6 metadata traps and the prompts that fix them" style="max-width:100%; height:auto; border-radius:8px;">
+            
+            <div style="text-align:center; margin-bottom:20px;"><img src="https://media2.dev.to/dynamic/image/width=1200,height=627,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.us-east-2.amazonaws.com%2Fuploads%2Farticles%2Ff5rmz35vkgc1lkmywfnr.png" alt="Your AI-built Next.js 16 landing page looks fine. Its link preview might not: 6 metadata traps and the prompts that fix them" style="max-width:100%; height:auto; border-radius:8px;" loading="lazy"></div>
+            <div class="article-body" style="font-size: 16px; line-height: 1.8; color: #333;">
+                <p>An AI-built Next.js 16 landing page can look perfect in your browser while its link previews, robots.txt, and sitemap still point at localhost:3000, lose their image on every subpage, or show up as a blank card. Here are six metadata traps, each checked on a real build, with a fix and a prompt you can paste into Cursor, Claude Code, or ChatGPT.</p>
+<p>The examples come from a waitlist landing page built prompt by prompt on create-next-app 16.4 (Next.js 16.4, React 19.3, Tailwind v4). None of these show up when you click around on localhost, which is why they slip through. You only notice when someone shares the link.</p>
+<p>Ask an assistant for a site config and you'll almost always get this line. Our own prompt asked for exactly this:</p>
+<p>That fallback is fine for local dev. The problem is that nothing complains when the variable is missing in production. We built the app without it and checked the output. robots.txt said Sitemap: http://localhost:3000/sitemap.xml, every <loc> in the sitemap was http://localhost:3000, and the static admin page had an og:image on localhost. The build passed without a single error.</p>
+<p>If the assistant skips metadataBase entirely, Next.js does warn you, but only once, buried in the build log:</p>
+<p>Also remember that .env.local never reaches Vercel. The default .gitignore from create-next-app ignores .env*, so the variable has to be set in the project settings.</p>
+<p>The fix is to make a missing URL break the build where it matters. This goes at the top of next.config.ts:</p>
+<p>VERCEL_ENV is a Vercel system variable that's available at build time, so local builds and preview deploys are left alone. In our test, faking VERCEL_ENV=production with an empty URL or a localhost URL failed the build. A real domain passed.</p>
+<p>In next.config.ts, fail the build when VERCEL_ENV is "production" and NEXT_PUBLIC_SITE_URL is empty or contains localhost. Keep the localhost fallback in lib/site.ts for dev. Add NEXT_PUBLIC_SITE_URL to .env.example with a comment saying it must be set in Vercel's Production environment.</p>
+<p>The natural reaction is to add the variable in the Vercel dashboard and refresh. That doesn't work, for two reasons.</p>
+<p>First, NEXT_PUBLIC_ variables are inlined when you run next build. The Next.js docs say they're "frozen with the value evaluated at build time." We built with https://a.example and started the server with https://b.example. The page and robots.txt both still said a.example.</p>
+<p>Second, a lot of your SEO output is static. In our test runs, npm run build marked the OG image, robots.txt, sitemap.xml, and the icon as static routes. The docs call robots.js and sitemap.js special Route Handlers that are "cached by default." When we built without the variable and only set it at next start, the dynamic home page picked it up, but robots.txt, the sitemap, and the static admin page stayed on localhost.</p>
+<p>Vercel's docs are explicit too: environment variable changes "only apply to new deployments. You must redeploy." And a variable you add only for Preview won't exist in Production.</p>
+<p>If you'd rather not maintain a variable at all, Vercel sets VERCEL_PROJECT_PRODUCTION_URL on every deployment, previews included, and its docs suggest it for OG image URLs. It has no https://, and since it doesn't start with NEXT_PUBLIC_ it won't reach client components, so only use it in server code.</p>
+<p>After changing any NEXT_PUBLIC_ variable or anything used by robots.ts, sitemap.ts, or opengraph-image.tsx, tell me to redeploy, not just refresh. Add a line about this to the README's deploy notes.</p>
+<p>This one is easy to miss. The root layout sets a full openGraph object, and then the assistant gives the pricing page its own share title:</p>
+<p>Next.js merges metadata shallowly, so a page that defines openGraph replaces the parent's whole openGraph object. On our build, that page lost og:url, og:site_name, og:type, og:image, and twitter:image. The root opengraph-image.tsx still existed, but the page no longer pointed at it. Share that link and you get a card with no image.</p>
+<p>The docs suggest pulling the shared fields into a variable and spreading it. Include the image, or you'll get everything back except the part people actually see:</p>
+<p>With that, the page had og:image and twitter:image again. The opposite case is quieter. A page that defines no openGraph inherits everything, including the layout's og:url. Our status page announced the homepage as its URL.</p>
+<p>Create lib/seo.ts exporting sharedOpenGraph (siteName, type, and the OG image as /opengraph-image, 1200×630). Every page that sets openGraph must spread it first and set its own title and url. Never set a partial openGraph object on a page.</p>
+<p>opengraph-image.tsx with ImageResponse looks like normal JSX, so assistants write it like a normal component. It isn't one. The docs say: "Only flexbox and a subset of CSS properties are supported. Advanced layouts (e.g. display: grid) will not work." There's also a 500 KB bundle limit (fonts and images count), and only ttf, otf, and woff fonts.</p>
+<p>We tried two failure modes. A <div> with three children and no display: "flex" breaks the build, which at least tells you:</p>
+<p>Tailwind classes are worse, because nothing complains. With className="flex h-full w-full bg-violet-700 text-white text-6xl" the build passed and the route returned a valid 1200×630 PNG with a transparent background and tiny black text in the top-left corner.</p>
+<p>In app/opengraph-image.tsx, use only inline style objects, no className. Every div with more than one child gets display: "flex". No grid. If you load a custom font, use a .ttf or .otf file. After building, open /opengraph-image and describe what you see.</p>
+<p>Older tutorials put themeColor and viewport inside metadata, and assistants still copy that. Both have been deprecated there since Next.js 14. On 16.4 the build passes and prints a warning for each prerendered route:</p>
+<p>The HTML had no theme-color tag at all. Moving it fixed it:</p>
+<p>After that the page had <meta name="theme-color" content="#7c3aed"/>. You don't need a viewport string either, since Next.js adds width=device-width, initial-scale=1 by default.</p>
+<p>A related one, and this time the build tells you: if the assistant puts "use client" on a page that exports metadata, the build fails with "You are attempting to export "metadata" from a component marked with "use client"". Don't let it "fix" that by deleting the metadata. Keep the page a Server Component and move the interactive part into its own client component.</p>
+<p>Never put themeColor, colorScheme, or viewport in metadata; use export const viewport: Viewport. Pages that export metadata stay Server Components. Move hooks and handlers into a separate "use client" file.</p>
+<p>A careful assistant will both disallow /admin in robots.ts and set robots: { index: false } on the admin page. The test app built from our own pack does exactly that. It sounds like belt and braces, but Google's docs say: "For the noindex rule to be effective, the page or resource must not be blocked by a robots.txt file." If the crawler can't fetch the page, it never sees the noindex, and the URL can still be listed if something links to it.</p>
+<p>Pick one per path. For pages you want out of search results, leave them crawlable and use noindex. Use Disallow for things like /api/ that you just don't want crawled. And neither one is access control. robots.txt is a public file that lists your admin path for anyone who reads it, so the password check is what actually protects it.</p>
+<p>Previews mostly take care of themselves. Vercel adds X-Robots-Tag: noindex to preview deployments and to outdated production deployments, except when a custom domain is assigned to a non-production branch. A staging.yourdomain.com branch domain can be indexed unless you add the header yourself.</p>
+<p>In robots.ts, disallow only /api/. Keep robots: { index: false } on /admin and /status. Add a comment that robots rules aren't security, and that the admin route must check the password on the server.</p>
+<p>Run this against the production URL after every deploy that touches metadata:</p>
+<p>Every page should print an og:image on your real domain, the sitemap line should not say localhost, and the image route should return image/png. Then open /opengraph-image in a browser and look at it, because a transparent card still returns image/png.</p>
+<p>It also helps to put the rules in AGENTS.md or .cursor/rules/seo.mdc (with alwaysApply: true), so the assistant still follows them twenty prompts later:</p>
+<p>If you're starting a landing page from scratch, the free Landing Page + Waitlist sample has four prompts from our pack: a scaffold that won't break npm run build, a Tailwind v4 dark-mode toggle, and rescues for build failures and invisible colors. The metadata prompt isn't in it, so add the prompts above yourself.</p>
+<p>Templates let you quickly answer FAQs or store snippets for re-use.</p>
+<p>Are you sure you want to hide this comment? It will become hidden in your post, but will still be visible via the comment's permalink.</p>
+<p>For further actions, you may consider blocking this person and/or reporting abuse</p>
+<p>DEV Community — A space to discuss and keep up software development and manage your software career</p>
+<p>Built on Forem — the open source software that powers DEV and other inclusive communities.</p>
+<p>Made with love and Ruby on Rails. DEV Community © 2016 - 2026.</p>
+<p>We're a place where coders share, stay up-to-date and grow their careers.</p>
+                <p style="margin-top: 25px;">
+                    <a href="https://dev.to/shipinanhour/your-ai-built-nextjs-16-landing-page-looks-fine-its-link-preview-might-not-6-metadata-traps-and-35lf" target="_blank" rel="nofollow noopener" style="color: #0d6efd; text-decoration: none; font-weight: bold;">
+                        &rarr; Baca artikel asli
+                    </a>
+                </p>
+            </div>
+            
+            
+<div style="text-align:center; margin:20px 0;">
+    <script type="text/javascript">
+        atOptions = {'key' : 'f9e40eb3b3cd05f1038aac7b36b33ad2','format' : 'iframe','height' : 90,'width' : 728,'params' : {}};
+    </script>
+    <script type="text/javascript" src="https://upholdbrilliancerecast.com/f9e40eb3b3cd05f1038aac7b36b33ad2/invoke.js"></script>
+</div>
+
+        </div>
+    </div>
+</body>
+</html>
+        

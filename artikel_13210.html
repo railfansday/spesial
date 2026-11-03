@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>25 of 25 Pinterest Pins Answered &#x27;Pin Not Found&#x27;. Their IDs Had Stopped Being Numbers</title>
+    <link rel="canonical" href="https://railfansday.github.io/newera3/artikel_13210.html">
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f4f4f9; line-height: 1.6; }
+        .container { max-width: 800px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .btn-back { display: inline-block; margin-bottom: 20px; color: #0d6efd; text-decoration: none; }
+        .article-body img { max-width: 100%; height: auto; border-radius: 8px; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="btn-back">&larr; Kembali ke Daftar Berita</a>
+        <h1>25 of 25 Pinterest Pins Answered &#x27;Pin Not Found&#x27;. Their IDs Had Stopped Being Numbers</h1>
+        <p style="color: #888; font-size: 14px;">Tanggal: 2026-11-03</p>
+        
+        <div class="article-body">
+            <img src="https://media2.dev.to/dynamic/image/width=1200,height=627,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.us-east-2.amazonaws.com%2Fuploads%2Farticles%2Fdqztq13j9dzijyfqekrt.png" alt="25 of 25 Pinterest Pins Answered &#x27;Pin Not Found&#x27;. Their IDs Had Stopped Being Numbers" style="max-width:100%; height:auto; border-radius:8px;">
+            
+            <div style="text-align:center; margin-bottom:20px;"><img src="https://media2.dev.to/dynamic/image/width=1200,height=627,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.us-east-2.amazonaws.com%2Fuploads%2Farticles%2Fdqztq13j9dzijyfqekrt.png" alt="25 of 25 Pinterest Pins Answered 'Pin Not Found'. Their IDs Had Stopped Being Numbers" style="max-width:100%; height:auto; border-radius:8px;" loading="lazy"></div>
+            <div class="article-body" style="font-size: 16px; line-height: 1.8; color: #333;">
+                <p>I run a visa agency in Bali, and the other half of my week goes into Apify Actors. The Pinterest one exists because of a question every content person eventually asks: for this keyword, what is actually winning, and which websites does Pinterest send the clicks to?</p>
+<p>The "what is winning" half has a standard answer — pull the results, turn on the engagement fields, sort by saves. On 3 November 2026 I ran exactly that for three keywords and got 150 rows with saves: null in every one of them.</p>
+<p>Three keywords through Pinterest's own search, pins scope, 50 results each, 3 November 2026: bali villa, minimalist kitchen, fall outfits. Pinterest Search Scraper, no proxy, no login.</p>
+<p>Then the same keyword again with the details switch on — 25 pins, the run that is supposed to go fetch saves, comments and shares from each pin's own page. Status message: details missing on 25 row(s). Twenty-five for twenty-five.</p>
+<p>The detail lookup is one request per pin to Pinterest's own web endpoint, the same one its front end uses:</p>
+<p>I fired it by hand with an id from the dataset and got this back:</p>
+<p>e1_AfqPShzTvYDMaqIpMBCgj5Z2d_… — 55 to 57 characters of opaque token. Three weeks earlier the same field in my own README read 140806234512418. And that numeric id still works today: I replayed it against the same endpoint and it answered success, with aggregated_stats: {saves: 9971}. The endpoint is fine. The ids coming out of search are not ids any more.</p>
+<p>They are not an encoding of one, either. The item's node_id is just base64 of Pin:e1_AfqPShz…. There are two numbers in the payload that look exactly like pin ids — AggregatedPinData:3927259812522011584 and story_pin_data_id: 3927259406614859136 — and both answer Pin not found. I also tried every field_set_key I know on the search endpoint; the stats never come down with the search result.</p>
+<p>The token is at least stable and real. Three runs of the same keyword across ten minutes returned the same 50 pins with the same 50 ids in the same order, and https://www.pinterest.com/pin/e1_AfqPShz…/ serves a 200 and a real pin page — 1.5 MB of it, with the pin's own data no longer in the HTML. The page's embedded config names the experiment doing this: unauth_dweb_graphql_pin_page. Logged-out pin pages are moving to GraphQL with persisted queries, and the public REST shim that used to serve them is being starved.</p>
+<p>I probed the neighbouring endpoints before touching any code:</p>
+<p>Only pins-out-of-search lost their id. Board followers, which also need a second request, still arrive: a 5-row board run with details on the same keyword filled all five, the largest at 3,847,062. Profile pin feeds are untouched, so my Pinterest Profile Scraper — which walks a user's pins rather than a search — never saw this at all. If you have a scraper reading Pinterest, the blast radius is exactly the search-to-pin-detail hop.</p>
+<p>There is no clever recovery here, so the patch is small. Before it, a details run on 25 search pins fired 25 doomed requests, took twice as long as the plain run for nothing, and shipped saves: null, comments: null in every row — the empty-column failure mode I spend most of my schema work avoiding.</p>
+<p>Before the patch: 25 rows, 25 wasted requests, 7.3 s, details missing on 25 row(s), two always-null columns. After it: ten rows in 4.0 s, zero wasted requests, no saves/comments/shares keys in the row at all, and a status message that says what happened —</p>
+<p>saves, comments and shares are not available for pins that come out of Pinterest search — Pinterest stopped giving those results a public pin id (10 row(s)); every other field is there, and boards and people searches still take details</p>
+<p>Boards-with-details re-verified on the same build before the latest tag moved. A buyer who ticks a box that cannot work deserves a sentence, not a column of nulls — and the README now opens with that note instead of promising saves "one switch away".</p>
+<p>reactions still comes down with every search result, free, no second request. It is a much smaller number than saves — median 15 on fall outfits, max 4,622 — but it is the only engagement signal search carries now.</p>
+<p>And measuring it changed what I think the ranking question even is. Look at who occupies page one:</p>
+<p>For minimalist kitchen, Pinterest's first 50 results are a wall of three-week-old pins from accounts with a single follower and no reactions at all — one linking to quietnest.openlink.biz.id. That is not a niche's greatest hits, it is this month's publishing volume. bali villa behaves like a mature topic instead: pins back to 2022, a median pinner with 157 followers, tags on 38 of 50. Same endpoint, same page size, completely different thing in the box — and on a keyword like the first one, losing saves costs nothing, because there was nothing to sort.</p>
+<p>linkDomain is the field I actually use most: group 50 rows by it and you have the list of sites competing for a keyword. On fall outfits the naive grouping says the top destination is amazon.com with 9 of 26 links, a third of the traffic.</p>
+<p>It is not. The same 26 links contain amazon.com ×9, amzn.to ×5, link.amazon ×3 and amzlink.to ×1 — 17 of 26, two thirds, under four different domain strings, because affiliate shorteners are domains too. Merge them and the second-placed site has one link. Pinterest's fashion search is an Amazon affiliate channel with a long tail, and the obvious GROUP BY understates it by half.</p>
+<p>Two more things to fold into the same counting:</p>
+<p>One other thing I measured while writing this: page_size: 25 is a suggestion. Pinterest answered my pages with 21 and 24 items, one of which each time was a story module — a carousel the front end renders, not a pin. Filter on type === 'pin' rather than trusting the count, and page with the bookmark the response hands back (2,064 characters of it) rather than an offset.</p>
+<p>When not to use this. If you need saves, this is the wrong road entirely — go through a logged-in business account and Pinterest's official API, which is what the numbers were for. If you want everything a known creator ever pinned, search is the wrong entry point: walk the profile. And if you want one specific pin by URL, you need a pin reader, not a search.</p>
+<p>Search is still the right tool for the two questions I started with. One of them now has a smaller answer, and the other one needed better arithmetic than I was doing.</p>
+<p>Templates let you quickly answer FAQs or store snippets for re-use.</p>
+<p>Are you sure you want to hide this comment? It will become hidden in your post, but will still be visible via the comment's permalink.</p>
+<p>For further actions, you may consider blocking this person and/or reporting abuse</p>
+<p>DEV Community — A space to discuss and keep up software development and manage your software career</p>
+<p>Built on Forem — the open source software that powers DEV and other inclusive communities.</p>
+<p>Made with love and Ruby on Rails. DEV Community © 2016 - 2026.</p>
+<p>We're a place where coders share, stay up-to-date and grow their careers.</p>
+                <p style="margin-top: 25px;">
+                    <a href="https://dev.to/matveyg/25-of-25-pinterest-pins-answered-pin-not-found-their-ids-had-stopped-being-numbers-104a" target="_blank" rel="nofollow noopener" style="color: #0d6efd; text-decoration: none; font-weight: bold;">
+                        &rarr; Baca artikel asli
+                    </a>
+                </p>
+            </div>
+            
+            
+<div style="text-align:center; margin:20px 0;">
+    <script type="text/javascript">
+        atOptions = {'key' : 'f9e40eb3b3cd05f1038aac7b36b33ad2','format' : 'iframe','height' : 90,'width' : 728,'params' : {}};
+    </script>
+    <script type="text/javascript" src="https://upholdbrilliancerecast.com/f9e40eb3b3cd05f1038aac7b36b33ad2/invoke.js"></script>
+</div>
+
+        </div>
+    </div>
+</body>
+</html>
+        
